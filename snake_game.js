@@ -109,9 +109,8 @@ function render() {
 		var newPosition = new THREE.Vector3(head.mesh.position.x + direction.x + Math.sign(direction.x)*padding,head.mesh.position.y + direction.y + Math.sign(direction.y)*padding, head.mesh.position.z + direction.z + Math.sign(direction.z)*padding)
 		tail.setPosition(newPosition);
 		snake.push(tail);
-		// left then right try
 		head=tail;
-		for(var i= snake.length - 2;i>0;i--) {
+		for(var i= snake.length - 2;i>-1;i--) {
 			if(head.mesh.position.distanceTo(snake[i].mesh.position) <1) {
 				end=true;
 				// console.log(i);
@@ -140,9 +139,6 @@ function render() {
 		
 		if(end===true) {
 			text.innerHTML="Game end";
-			
-			// for (let i = 0; i < 5; i++) 
-			// 	snake.pop();
 			direction =new THREE.Vector3(0,0,0);
 			reset.style.position = "absolute";
 			reset.style.width = 400;
