@@ -1,3 +1,4 @@
+
 function Cube(vec, material, scene, geometry, renderWireframe) {
 	this.geometry = typeof geometry === 'undefined' ? cube : geometry;
 	this.mesh = new THREE.Mesh(this.geometry, material);
@@ -48,21 +49,28 @@ var keysQueue = [];
 var snake = [];
 var apple;
 var cube = new THREE.BoxGeometry(1,1,1);
+var sphere = new THREE.SphereGeometry(0.75);
+var blackhole = new THREE.CircleGeometry(1);
 var gameCube = new THREE.BoxGeometry(cubeSize,cubeSize,cubeSize);
 var direction = new THREE.Vector3(1,0,0);
 var text = document.createElement("div");
+var speed = document.createElement("div");
 var reset=document.createElement("button");
+var slider = document.createElement("INPUT");
 var scoreDisplay=document.createElement("div");
 var clock = new THREE.Clock();
 
 function init() {
-    renderer.setSize( WIDTH, HEIGHT );
+	renderer.setSize( WIDTH, HEIGHT );
+	create_slider();
     document.body.appendChild( renderer.domElement );
 	scene.background = new THREE.Color(BACKGROUND_COLOR);
 	camera.position.set(0,0,60);
-
 	cube.center();
-
+	var blackholematerial = new THREE.MeshBasicMaterial( { color: 0x000000 } );
+	black1 = new Cube(new THREE.Vector3(5,5,5),blackholematerial,scene,blackhole);
+	black2 = new Cube(new THREE.Vector3(-5,-5,-5),blackholematerial,scene,blackhole);
+	// var circle = new THREE.Mesh( geometry, material );
 	lightPos.forEach(function(v){
 		var light = new THREE.PointLight(0xffffff, 1, 100);
 		light.position.set(v.x,v.y,v.z);
@@ -73,14 +81,14 @@ function init() {
 		snake.push(new Cube(new THREE.Vector3((i+i*padding) - halfCubeSize + 0.5, 0.5 + padding/2,  0.5 + padding/2), snakeMaterial,scene))		
 	}
 	var appleMaterial = new THREE.MeshPhongMaterial({color : APPLE_COLOR });
-	apple = new Cube(spawnAppleVector(), appleMaterial, scene);
+	apple = new Cube(spawnAppleVector(), appleMaterial, scene,sphere);
 	var edgesMaterial = new THREE.LineBasicMaterial({ color: 0xffffff });
 	new Cube(new THREE.Vector3(0, 0, 0), edgesMaterial, scene, gameCube,true);
 	text.style.position = "absolute";
 	text.style.width = 200;
 	text.style.height = 100;
 	text.innerHTML = "Score: "+ score;
-	text.style.top = 20+"px";
+	text.style.top = 40+"px";
 	text.style.left = 20+"px";
 	text.style.font = 50+"px";	
 	document.body.appendChild(text);
@@ -88,17 +96,63 @@ function init() {
 	render();
 	
 }
+
+function create_slider() {
+	slider.setAttribute("type","range");
+	slider.setAttribute("min","0");
+	slider.setAttribute("max","4");
+	slider.setAttribute("value","1");
+	slider.setAttribute("step","0.25");
+	slider.style.width=33+"%";
+	slider.style.height=20+"px"
+	slider.style.color=BACKGROUND_COLOR;
+	document.body.appendChild(slider);
+	
+}
+
 function spawnAppleVector(){
 	var x=randInRange(0,edgeSize-1);
 	var y=randInRange(0,edgeSize-1);
 	var z=randInRange(0,edgeSize-1);
+	
 	return new THREE.Vector3(x+x*padding-halfCubeSize+0.5,y+y*padding-halfCubeSize+0.5,z+z*padding-halfCubeSize+0.5)
 }
 
 
 function render() {
 	requestAnimationFrame( render );
-	theta +=clock.getDelta();
+	let delta = clock.getDelta();
+	theta = theta + delta;
+	// theta += clock.getDelta();
+	// text.innerHTML=theta;
+	// snake.mesh.timeScale = 3;
+	
+	speed.style.position = "absolute";
+	speed.style.width = 200;
+	speed.style.height = 100;
+	speed.innerHTML = "Score: "+ score;
+	speed.style.top = 2+"px";
+	speed.style.left = 500+"px";
+	speed.style.font = 50+"px"
+	document.body.appendChild(speed);
+	speed.innerHTML = "Animation Speed is "+slider.value;
+	delta=delta/(0.1*slider.value);
+	for(i=0;i<snake.length;i++)
+	{
+		if(snake[i].mesh.position.distanceTo(black1.mesh.position) <1) {
+			// snake[i].setPosition(new THREE.Vector3(-5,-5,-5));
+			for(let j=0;j<(snake.length);j++){
+				snake[j].setPosition(new THREE.Vector3(-5+(j*direction.x),-5+(j*direction.y),-5+(j*direction.z)));	
+			}
+
+		}
+		else if(snake[i].mesh.position.distanceTo(black2.mesh.position) <1) {
+			// snake[i].setPosition(new THREE.Vector3(5,5,5));
+			for(let j=i;j<snake.length;j++){
+				snake[j].setPosition(new THREE.Vector3(+5+(j*direction.x),5+(j*direction.y),5+(j*direction.z)));
+			}
+		}
+	}
 	if(theta > delta) {
 		var tail = snake.shift();
 		var head = snake[snake.length - 1];
@@ -143,7 +197,7 @@ function render() {
 			reset.style.position = "absolute";
 			reset.style.width = 400;
 			reset.style.height = 200;
-			reset.style.top = 20+"px";
+			reset.style.top = 40+"px";
 			reset.style.left = 100+"px";
 			reset.style.font = 50+"px";
 			reset.innerHTML="restart";
@@ -151,7 +205,7 @@ function render() {
 			scoreDisplay.style.position = "absolute";
 			scoreDisplay.style.width = 400;
 			scoreDisplay.style.height = 200;
-			scoreDisplay.style.top = 20+"px";
+			scoreDisplay.style.top = 40+"px";
 			scoreDisplay.style.left = 200+"px";
 			scoreDisplay.style.font = 50+"px";
 			document.body.appendChild(scoreDisplay);
@@ -213,6 +267,7 @@ document.addEventListener("keydown",function(e){
 	}
 });
 
+// var animation = THREE.AnimationMixer(snake.mesh ).timeScale = 3 ; // add this
 
 function onWindowResize() {
     // Camera frustum aspect ratio
