@@ -132,7 +132,7 @@ function render() {
 	speed.style.height = 100;
 	speed.innerHTML = "Score: "+ score;
 	speed.style.top = 2+"px";
-	speed.style.left = 500+"px";
+	speed.style.left = 50+"%";
 	speed.style.font = 50+"px"
 	document.body.appendChild(speed);
 	speed.innerHTML = "Animation Speed is "+slider.value;
