@@ -4,6 +4,14 @@
     "description": "This is a website for 3D Snake Game",
     "engines": {
         "npm": "6.14.5"
-      }  
+      },
+      "scripts": {
+        "start": "node snake_game.js",
+        "build": "ng build",
+        "heroku-prebuild": "echo This runs before Heroku installs dependencies.",
+        "heroku-postbuild": "echo This runs after Heroku installs dependencies, but before Heroku prunes and caches dependencies.",
+        "heroku-cleanup": "echo This runs after Heroku prunes and caches dependencies."
+      }
+
   }
   
