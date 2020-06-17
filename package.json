@@ -1,0 +1,9 @@
+{
+    "name": "Snake_Game",
+    "version": "0.0.1",
+    "description": "This is a website for 3D Snake Game",
+    "engines": {
+        "npm": "6.14.5"
+      }  
+  }
+  
